@@ -31,12 +31,16 @@ def searchWebPage(driver, url, query):
     #Open the webpage
     driver.get(url)
 
-
     #Identify the search box and search for "Laptops"
     searchBox = driver.find_element("id","search")
     searchBox.send_keys(query)
     time.sleep(0.2)
     searchBox.send_keys(Keys.RETURN)
+
+    if("Your search returned no results." in driver.page_source):
+        return False
+    else:
+        return True
 
 
 #Scraping Part
@@ -82,16 +86,20 @@ def main():
     driver = settingUpDriver()
 
     #Searching for Laptops
-    searchWebPage(driver, E_COMMERCE_URL, QUERY)
+    found = searchWebPage(driver, E_COMMERCE_URL, QUERY)
 
-    #Retrieving data
-    product_name, product_price, product_image = retrieveData(driver)
+    if(found):
+        #Retrieving data
+        product_name, product_price, product_image = retrieveData(driver)
 
-    #Creating JSON
-    products = createJson(product_name, product_price, product_image)
+        #Creating JSON
+        products = createJson(product_name, product_price, product_image)
 
-    #Sending JSON
-    sendJson(products,product_name)
+        #Sending JSON
+        sendJson(products,product_name)
+    else:
+        print("No results found")
+
 
     driver.quit()
 

@@ -16,20 +16,25 @@ class Tests(unittest.TestCase):
     def test_search_results(self):
 
         #test where results are found
-        searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "Laptops")
-        self.assertNotIn("Your search returned no results.", self.driver.page_source)
+        found = searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "Laptops")
+        self.assertTrue(found)
 
         #test where no results are found
-        searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "xyzabc")
-        self.assertIn("Your search returned no results.", self.driver.page_source)
+        notfound = searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "xyzabc")
+        self.assertFalse(notfound)
     
     #test the data retrieved
     def test_retrieveData(self):
+        
+        #test that no data is retrieved
+        searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "xyzabc")
+        self.assertEqual(retrieveData(self.driver), ([], [], []))
+
         #test if the data is retrieved
         searchWebPage(self.driver, "https://www.scanmalta.com/shop/", "Laptops")
-        self.assertNotEqual(retrieveData(self.driver), (None, None, None))
+        self.assertNotEqual(retrieveData(self.driver), ([], [], []))
 
-        #test if the correct ammount of data is retrieved
+        #test if the correct ammount of data is retrieved -- driver is currently in the laptops search results page
         name, price, image = retrieveData(self.driver)
         self.assertEqual(len(name), 5)
         self.assertEqual(len(price), 5)
